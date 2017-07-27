@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">My Firebase Application</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="register_text">Not have an account?<u><h1>Signup Here</h1></u></string>
+    <string name="username">Name</string>
+    <string name="email">Email</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="google_login_here">google login here</string>
+    <string name="stack">Stack</string>
+    <string name="name">Name</string>
+    <string name="already_register">Already Register ?</string>
+</resources>

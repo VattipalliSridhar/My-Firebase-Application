@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1E88E5</color>
+    <color name="colorAccent">#2196F3</color>
+    <color name="bodyColor">#dcdcdc</color>
+
+    <color name="colorYello">#FFCE54</color>
+    <color name="colorBettersweet1">#FC6E51</color>
+    <color name="colorBettersweet2">#E9573F</color>
+    <color name="mint1">#48CFAD</color>
+    <color name="mint2">#37BC9B</color>
+    <color name="aqua1">#4FC1E9</color>
+    <color name="aqua2">#3BAFDA</color>
+    <color name="blue1">#bbdefb</color>
+    <color name="dark_orange">#f57f17</color>
+    <color name="bb">#006f94</color>
+
+    <color name="bg_user_message">#ffffff</color>
+
+    <color name="primary_dark">#E64A19</color>
+    <color name="primary">#FF5722</color>
+    <color name="accent">#448AFF</color>
+    <color name="divider">#B6B6B6</color>
+    <color name="text_color">#FFFFFF</color>
+    <color name="text_color_icon">#212121</color>
+    <color name="yello_one">#FDC94F</color>
+    <color name="purple_dark">#673ab7</color>
+    <color name="red">#b71c1c</color>
+    <color name="mint">#48cfad</color>
+    <color name="purple_red">#6a1b9a</color>
+    <color name="sky2">#5DDCD2</color>
+    <color name="sky">#3bafda</color>
+    <color name="skyDark">#1A90A0</color>
+    <color name="orange_lite">#FD757C</color>
+
+</resources>
