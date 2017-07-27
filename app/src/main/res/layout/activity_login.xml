@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/admin_pic"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_centerHorizontal="true"
         android:src="@drawable/sri"
         android:layout_alignParentTop="true"/>
