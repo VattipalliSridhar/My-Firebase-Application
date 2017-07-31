@@ -18,6 +18,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.regex.Pattern;
 
@@ -38,6 +43,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     ProgressDialog mDialog;
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+    private DatabaseReference databaseReference;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -51,7 +58,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mRegister = (Button)findViewById(R.id.register_here);
         MGooglelogin = (Button)findViewById(R.id.google_login);
 
-
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
 
         mDialog = new ProgressDialog(this);
         mAuth = FirebaseAuth.getInstance();
@@ -176,20 +183,64 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (!task.isSuccessful())
                 {
                     mDialog.dismiss();
-                    Toast.makeText(LoginActivity.this,"Login not successful",Toast.LENGTH_LONG).show();
-                    Toast.makeText(LoginActivity.this,"please verify your emailId",Toast.LENGTH_SHORT).show();
+                    checkUserExists();
+                }
+                else
+                {
+                    /*Intent intent = new Intent(LoginActivity.this,WelcomeActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);*/
+                    mDialog.dismiss();
+                    checkEmailVerified();
+                    //finish();
+                }
+            }
+        });
+    }
+
+    private void checkUserExists()
+    {
+        final String user_id=mAuth.getCurrentUser().getUid();
+        databaseReference.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if(dataSnapshot.hasChild(user_id))
+                {
 
                 }
                 else
                 {
-                    Intent intent = new Intent(LoginActivity.this,WelcomeActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    mDialog.dismiss();
-                    finish();
+                    Toast.makeText(LoginActivity.this,"You must sign up",Toast.LENGTH_SHORT).show();
                 }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
+
+    }
+
+    private void checkEmailVerified()
+    {
+        FirebaseUser firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
+        boolean emailVerified=firebaseUser.isEmailVerified();
+        if(!emailVerified)
+        {
+            Toast.makeText(LoginActivity.this,"Verify the email address",Toast.LENGTH_SHORT).show();
+            mAuth.signOut();
+        }
+        else
+        {
+            Intent intent = new Intent(LoginActivity.this,WelcomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }
     }
 
 

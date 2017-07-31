@@ -105,12 +105,15 @@ public class WelcomeActivity extends AppCompatActivity
 
     private void setUserDetails()
     {
-        mFirebasereference.addValueEventListener(new ValueEventListener()
+        mFirebasereference.child(mCurrentUserUid).addValueEventListener(new ValueEventListener()
         {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot)
             {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren())
+                User user1 = dataSnapshot.getValue(User.class);
+                textView_User_name.setText("Welcome "+user1.getUser_name());
+                Glide.with(WelcomeActivity.this).load(Uri.parse(user1.getUser_pic_url())).into(profile_pic);
+                /*for(DataSnapshot snapshot : dataSnapshot.getChildren())
                 {
                     User user1 = snapshot.getValue(User.class);
                     if(mCurrentUserUid.equals(snapshot.getKey()))
@@ -118,7 +121,7 @@ public class WelcomeActivity extends AppCompatActivity
                         textView_User_name.setText("Welcome "+user1.getUser_name());
                         Glide.with(WelcomeActivity.this).load(Uri.parse(user1.getUser_pic_url())).into(profile_pic);
                     }
-                }
+                }*/
 
             }
 
