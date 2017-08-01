@@ -114,15 +114,7 @@ public class WelcomeActivity extends AppCompatActivity
                 User user1 = dataSnapshot.getValue(User.class);
                 textView_User_name.setText("Welcome "+user1.getUser_name());
                 Glide.with(WelcomeActivity.this).load(Uri.parse(user1.getUser_pic_url())).into(profile_pic);
-                /*for(DataSnapshot snapshot : dataSnapshot.getChildren())
-                {
-                    User user1 = snapshot.getValue(User.class);
-                    if(mCurrentUserUid.equals(snapshot.getKey()))
-                    {
-                        textView_User_name.setText("Welcome "+user1.getUser_name());
-                        Glide.with(WelcomeActivity.this).load(Uri.parse(user1.getUser_pic_url())).into(profile_pic);
-                    }
-                }*/
+
 
             }
 
