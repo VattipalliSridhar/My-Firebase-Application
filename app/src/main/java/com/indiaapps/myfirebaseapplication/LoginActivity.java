@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         MGooglelogin = (Button)findViewById(R.id.google_login);
 
         databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
+        databaseReference.keepSynced(true);
 
         mDialog = new ProgressDialog(this);
         mAuth = FirebaseAuth.getInstance();

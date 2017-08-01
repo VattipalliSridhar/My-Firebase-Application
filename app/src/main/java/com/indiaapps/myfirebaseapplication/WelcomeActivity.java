@@ -45,10 +45,11 @@ public class WelcomeActivity extends AppCompatActivity
         textView_User_name = (TextView) findViewById(R.id.textViewUserEmail);
         buttonLogout = (Button) findViewById(R.id.buttonLogout);
         profile_pic=(ImageView)findViewById(R.id.profile_pic);
-
-        mFirebasereference=FirebaseDatabase.getInstance().getReference().child("users");
-        //initializing firebase authentication object
         firebaseAuth = FirebaseAuth.getInstance();
+        mFirebasereference=FirebaseDatabase.getInstance().getReference().child("users");
+        mFirebasereference.keepSynced(true);
+        //initializing firebase authentication object
+
 
         //if the user is not logged in
         //that means current user will return null
