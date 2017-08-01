@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
@@ -33,6 +34,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -52,13 +55,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
 
     public static final String FB_STORAGE_PATH = "user_profile_pic/";
-    public static final int REQUEST_CODE = 1234;
+    public static final int REQUEST_CODE = 1;
     private Uri imgUri;
     private String user_pic_uri;
 
     private FirebaseAuth mAuth;
     private DatabaseReference db;
     private StorageReference mStorageRef;
+    Uri resultUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -73,8 +77,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
 
         mAuth = FirebaseAuth.getInstance();
-        mStorageRef = FirebaseStorage.getInstance().getReference();
+
         db = FirebaseDatabase.getInstance().getReference().child("users");
+        mStorageRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
         //Get the storage reference
        // mStorageRef = mStorageRef.child(FB_STORAGE_PATH + Name + "." + getImageExt(imgUri));
 
@@ -128,12 +133,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 break;
 
             case R.id.upload_button:
-                Name = sign_up__name.getText().toString().trim();
+                /*Name = sign_up__name.getText().toString().trim();
                 if (TextUtils.isEmpty(Name))
                 {
                     Toast.makeText(RegisterActivity.this, "Enter User name", Toast.LENGTH_SHORT).show();
                     return;
-                }
+                }*/
                 startActivityForResult(new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI),REQUEST_CODE);
 
                 break;
@@ -148,10 +153,17 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && data != null && data.getData() != null)
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK)
         {
-            imgUri = data.getData();
-            if (imgUri != null)
+           Uri imgUri = data.getData();
+            Log.e("msg img getdata","crop img uri"+imgUri);
+            CropImage.activity(imgUri)
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .setAspectRatio(1,1)
+                    .start(this);
+
+
+            /*if (imgUri != null)
             {
 
                 final ProgressDialog dialog = new ProgressDialog(this);
@@ -202,11 +214,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             {
                 Toast.makeText(getApplicationContext(), "Please select image", Toast.LENGTH_SHORT).show();
 
-            }
+            }*/
 
 
 
-            try
+            /*try
             {
                 Bitmap bm = MediaStore.Images.Media.getBitmap(getContentResolver(), imgUri);
                 user_pic.setImageBitmap(bm);
@@ -218,6 +230,22 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             catch (IOException e)
             {
                 e.printStackTrace();
+            }*/
+        }
+        if(requestCode==CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
+        {
+            CropImage.ActivityResult result=CropImage.getActivityResult(data);
+            if(resultCode==RESULT_OK)
+            {
+                 resultUri = result.getUri();
+                Log.e("msg","crop img uri"+resultUri);
+                user_pic.setImageURI(resultUri);
+
+            }
+            else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE)
+            {
+                Exception error = result.getError();
+                Log.e("msg error","crop img uri"+error);
             }
         }
     }
@@ -246,29 +274,42 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
 
-
-
-
-        mAuth.createUserWithEmailAndPassword(Email,Password).addOnCompleteListener(new OnCompleteListener<AuthResult>()
-        {
+        StorageReference filePath = mStorageRef.child(resultUri.getLastPathSegment());
+        filePath.putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<AuthResult> task)
+            public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot)
             {
-                if (task.isSuccessful())
+                mAuth.createUserWithEmailAndPassword(Email,Password).addOnCompleteListener(new OnCompleteListener<AuthResult>()
                 {
-                    sendEmailVerification();
-                    progressDialog.dismiss();
-                    OnAuth(task.getResult().getUser());
-                    mAuth.signOut();
-                }
-                else
-                {
-                    Toast.makeText(RegisterActivity.this,"error on creating user",Toast.LENGTH_SHORT).show();
-                }
+
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task)
+                    {
+                        if (task.isSuccessful())
+                        {
+
+                            sendEmailVerification();
+                            progressDialog.dismiss();
+                            user_pic_uri=taskSnapshot.getDownloadUrl().toString();//ignore that error
+                            OnAuth(task.getResult().getUser());
+                            mAuth.signOut();
+                        }
+                        else
+                        {
+                            Toast.makeText(RegisterActivity.this,"error on creating user",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+
+                });
+
             }
-
-
         });
+
+
+
+
+
     }
 
 
@@ -345,7 +386,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             sign_up_password.setError(null);
         }
 
-        if (imgUri == null)
+        if (resultUri == null)
         {
             Toast.makeText(getApplicationContext(), "Please select image", Toast.LENGTH_SHORT).show();
             valid = false;

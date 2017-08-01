@@ -183,7 +183,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (!task.isSuccessful())
                 {
                     mDialog.dismiss();
-                    checkUserExists();
+                    Toast.makeText(LoginActivity.this,"You must first sign up",Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
@@ -198,37 +198,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    private void checkUserExists()
-    {
-        final String user_id=mAuth.getCurrentUser().getUid();
-        databaseReference.addValueEventListener(new ValueEventListener()
-        {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
-                if(dataSnapshot.hasChild(user_id))
-                {
 
-                }
-                else
-                {
-                    Toast.makeText(LoginActivity.this,"You must sign up",Toast.LENGTH_SHORT).show();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 
     private void checkEmailVerified()
     {
         FirebaseUser firebaseUser=FirebaseAuth.getInstance().getCurrentUser();
         boolean emailVerified=firebaseUser.isEmailVerified();
+
         if(!emailVerified)
         {
             Toast.makeText(LoginActivity.this,"Verify the email address",Toast.LENGTH_SHORT).show();
@@ -283,20 +259,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
-  /*  @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==3)
-        {
-            String email=data.getStringExtra("emails");
-            editText_email.setText(email);
-            *//*String password=data.getStringExtra("password");
-            editText_email.setText(password);*//*
-
-            register_text.setVisibility(View.GONE);
-        }
-    }*/
 
     @Override
     protected void onStart() {
