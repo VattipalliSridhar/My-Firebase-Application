@@ -5,36 +5,32 @@
     android:layout_height="match_parent"
     android:background="@color/bodyColor">
 
-
-
-    <TextView
-        android:layout_width="wrap_content"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/wel_come_toolbar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/textViewUserEmail"
-        android:textColor="@android:color/black"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-    <ImageView
-        android:layout_centerHorizontal="true"
-        android:id="@+id/profile_pic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_below="@+id/textViewUserEmail"
-        android:scaleType="fitXY"
-        android:src="@mipmap/ic_launcher"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/post_list_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/wel_come_toolbar">
+
+    </android.support.v7.widget.RecyclerView>
 
 
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        android:id="@+id/buttonLogout"
-        android:background="@color/colorAccent"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"/>
+
+
+
+
+
+
+
+
+
 </RelativeLayout>

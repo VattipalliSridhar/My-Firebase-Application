@@ -1,7 +1,7 @@
 package com.indiaapps.myfirebaseapplication;
 
 /**
- * Created by 2136 on 7/24/2017.
+ * Created by Sridhar on 7/24/2017.
  */
 
 public class User
