@@ -1,32 +1,38 @@
 package com.indiaapps.myfirebaseapplication;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class WelcomeActivity extends AppCompatActivity
 {
@@ -41,17 +47,17 @@ public class WelcomeActivity extends AppCompatActivity
 
 
     private RecyclerView post_recycler_view;
-
+    private List<Post> postList;
+    private ProgressDialog progressDialog;
+    PostListAdapter postListAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-
+        postList = new ArrayList<>();
         mDatabase= FirebaseDatabase.getInstance().getReference().child("Post");
-        //mDatabase.keepSynced(true);
-
-        Post post=new Post();
+        mDatabase.keepSynced(true);
 
         screenWidth = getResources().getDisplayMetrics().widthPixels;
         screenHeight = getResources().getDisplayMetrics().heightPixels;
@@ -64,17 +70,9 @@ public class WelcomeActivity extends AppCompatActivity
 
 
         firebaseAuth = FirebaseAuth.getInstance();
-
-        //initializing firebase authentication object
-
-
-        //if the user is not logged in
-        //that means current user will return null
         if(firebaseAuth.getCurrentUser() == null)
         {
-            //closing this activity
             finish();
-            //starting login activity
             startActivity(new Intent(this, LoginActivity.class));
         }
 
@@ -101,9 +99,13 @@ public class WelcomeActivity extends AppCompatActivity
             }
         };
 
-        post_recycler_view=(RecyclerView)findViewById(R.id.post_list_recyclerView);
+        post_recycler_view=(RecyclerView) findViewById(R.id.post_list_recyclerView);
         post_recycler_view.setHasFixedSize(true);
         post_recycler_view.setLayoutManager(new LinearLayoutManager(this));
+
+
+
+
 
 
 
@@ -141,7 +143,6 @@ public class WelcomeActivity extends AppCompatActivity
     {
         super.onStart();
         firebaseAuth.addAuthStateListener(mAuthListener);
-
         FirebaseRecyclerAdapter<Post,PostViewHolder> firebaseRecyclerAdapter=new FirebaseRecyclerAdapter<Post, PostViewHolder>(
                 Post.class,
                 R.layout.post_row,
@@ -151,13 +152,30 @@ public class WelcomeActivity extends AppCompatActivity
             @Override
             protected void populateViewHolder(PostViewHolder viewHolder, Post model, int position)
             {
+                final String post_key=getRef(position).getKey();
                 //model=new Post();
                 viewHolder.setTitle(model.getTitle());
                 viewHolder.setDesc(model.getDesc());
                 viewHolder.setImage(getApplicationContext(),model.getImage());
+                viewHolder.setUserimage(getApplicationContext(),model.getUserimage());
+                viewHolder.setUsername(model.getUsername());
+
+
                 Log.e("Setting","Data img = "+ model.getImage());
                 Log.e("Setting","Data title = "+ model.getTitle());
                 Log.e("Setting","Data desc= "+ model.getDesc());
+                Log.e("Setting","Data user= "+ model.getUsername());
+                Log.e("Setting","Data user name= "+ model.getUserimage());
+
+
+                viewHolder.mView.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        Toast.makeText(getApplicationContext(),post_key,Toast.LENGTH_SHORT).show();
+                    }
+                });
 
             }
 
@@ -165,7 +183,9 @@ public class WelcomeActivity extends AppCompatActivity
         };
 
         post_recycler_view.setAdapter(firebaseRecyclerAdapter);
+
     }
+
 
 
     public static class PostViewHolder extends RecyclerView.ViewHolder
@@ -189,7 +209,12 @@ public class WelcomeActivity extends AppCompatActivity
             TextView post_desc=(TextView)mView.findViewById(R.id.post_rev_desc);
             post_desc.setText(desc);
         }
-        public void setImage(Context context ,String image)
+        public void setUsername(String username)
+        {
+            TextView post_user=(TextView)mView.findViewById(R.id.post_rev_user);
+            post_user.setText(username);
+        }
+        public void setImage(Context context , String image)
         {
             ImageView imageView=(ImageView)mView.findViewById(R.id.post_rev_img);
             imageView.getLayoutParams().height=(screenWidth*50)/100;
@@ -197,7 +222,32 @@ public class WelcomeActivity extends AppCompatActivity
 
             Glide.with(context).load(image).into(imageView);
         }
+
+        public void setUserimage(Context context, String userimage)
+        {
+            ImageView imageView1=(ImageView) mView.findViewById(R.id.post_rev_user_img);
+            imageView1.getLayoutParams().height=(screenWidth*10)/100;
+            imageView1.getLayoutParams().width=(screenWidth*10)/100;
+            Glide.with(context).load(userimage).into(imageView1);
+        }
+
+        private Bitmap StringToBitmap(String userimage)
+        {
+            try
+            {
+                byte [] encodeByte= Base64.decode(userimage,Base64.DEFAULT);
+                Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+                return bitmap;
+            }
+            catch(Exception e)
+            {
+                e.getMessage();
+                return null;
+            }
+        }
     }
+
+
 
     @Override
     public void onStop()

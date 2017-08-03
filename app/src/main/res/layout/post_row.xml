@@ -10,31 +10,72 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
         <ImageView
-            android:id="@+id/post_rev_img"
+            android:layout_margin="5dp"
+            android:id="@+id/post_rev_user_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:scaleType="centerCrop"
             android:src="@mipmap/ic_launcher_round"
             />
         <TextView
+            android:layout_marginLeft="5dp"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/post_rev_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="aaaaaaaaaaaaa"
+            android:padding="5dp"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            />
+        </LinearLayout>
+
+            <ImageView
+                android:id="@+id/post_rev_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_launcher_round"
+                />
+
+
+        <TextView
             android:id="@+id/post_rev_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
+            android:padding="5dp"
             android:text="aaaaaaaaaaaaa"
+            android:textColor="@android:color/black"
             android:textSize="16sp"
-            android:textStyle="bold"
-            android:padding="10dp"
-            />
+            android:textStyle="bold" />
+
         <TextView
             android:id="@+id/post_rev_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="aaaaaaaaaaaaa"
-            android:padding="10dp"
+            android:padding="5dp"
             />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:layout_marginLeft="5dp"
+            android:id="@+id/like_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/dislike"/>
+        </LinearLayout>
+
     </LinearLayout>
 
 </android.support.v7.widget.CardView>
