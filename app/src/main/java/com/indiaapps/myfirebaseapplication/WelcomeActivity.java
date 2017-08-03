@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -177,6 +178,13 @@ public class WelcomeActivity extends AppCompatActivity
                     }
                 });
 
+                viewHolder.like_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(getApplicationContext(),"like button",Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
 
 
@@ -191,11 +199,15 @@ public class WelcomeActivity extends AppCompatActivity
     public static class PostViewHolder extends RecyclerView.ViewHolder
     {
         View mView;
+        Button like_button;
 
         public PostViewHolder(View itemView)
         {
             super(itemView);
             mView=itemView;
+
+            like_button=(Button)mView.findViewById(R.id.like_button);
+
         }
 
         public void setTitle(String title)
