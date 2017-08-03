@@ -55,7 +55,7 @@ public class WelcomeActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-        postList = new ArrayList<>();
+        //postList = new ArrayList<>();
         mDatabase= FirebaseDatabase.getInstance().getReference().child("Post");
         mDatabase.keepSynced(true);
 
