@@ -74,6 +74,12 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:background="@drawable/dislike"/>
+        <TextView
+            android:layout_marginLeft="5dp"
+            android:id="@+id/like_count_txt"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:text="22"/>
         </LinearLayout>
 
     </LinearLayout>

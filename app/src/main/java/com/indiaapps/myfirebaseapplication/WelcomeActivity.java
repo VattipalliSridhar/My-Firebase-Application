@@ -26,6 +26,7 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,16 +49,30 @@ public class WelcomeActivity extends AppCompatActivity
 
 
     private RecyclerView post_recycler_view;
-    private List<Post> postList;
+    private List<String> postList;
     private ProgressDialog progressDialog;
     PostListAdapter postListAdapter;
+
+
+
+    //like code
+    private DatabaseReference mDatabaseLike;
+    private DatabaseReference mDatabaseUser;
+    private boolean mProceesLike=false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-        //postList = new ArrayList<>();
+        firebaseAuth = FirebaseAuth.getInstance();
+
+
+        postList = new ArrayList<>();
         mDatabase= FirebaseDatabase.getInstance().getReference().child("Post");
+        mDatabaseLike=FirebaseDatabase.getInstance().getReference().child("Likes");
+
+        mDatabase.keepSynced(true);
         mDatabase.keepSynced(true);
 
         screenWidth = getResources().getDisplayMetrics().widthPixels;
@@ -65,12 +80,12 @@ public class WelcomeActivity extends AppCompatActivity
 
         Toolbar toolbar=(Toolbar)findViewById(R.id.wel_come_toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Wel Come");
+
         /*getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
 
 
-        firebaseAuth = FirebaseAuth.getInstance();
+
         if(firebaseAuth.getCurrentUser() == null)
         {
             finish();
@@ -100,9 +115,24 @@ public class WelcomeActivity extends AppCompatActivity
             }
         };
 
+        mDatabaseUser=FirebaseDatabase.getInstance().getReference().child("users").child(firebaseAuth.getCurrentUser().getUid());
+        mDatabaseUser.keepSynced(true);
         post_recycler_view=(RecyclerView) findViewById(R.id.post_list_recyclerView);
         post_recycler_view.setHasFixedSize(true);
         post_recycler_view.setLayoutManager(new LinearLayoutManager(this));
+
+
+        mDatabaseUser.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                getSupportActionBar().setTitle(""+dataSnapshot.child("user_name").getValue());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
 
@@ -160,7 +190,7 @@ public class WelcomeActivity extends AppCompatActivity
                 viewHolder.setImage(getApplicationContext(),model.getImage());
                 viewHolder.setUserimage(getApplicationContext(),model.getUserimage());
                 viewHolder.setUsername(model.getUsername());
-
+                viewHolder.setLikeButton(post_key);
 
                 Log.e("Setting","Data img = "+ model.getImage());
                 Log.e("Setting","Data title = "+ model.getTitle());
@@ -174,14 +204,57 @@ public class WelcomeActivity extends AppCompatActivity
                     @Override
                     public void onClick(View v)
                     {
-                        Toast.makeText(getApplicationContext(),post_key,Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(getApplicationContext(),post_key,Toast.LENGTH_SHORT).show();
                     }
                 });
 
-                viewHolder.like_button.setOnClickListener(new View.OnClickListener() {
+                viewHolder.like_button.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View v) {
-                        Toast.makeText(getApplicationContext(),"like button",Toast.LENGTH_SHORT).show();
+                    public void onClick(View v)
+                    {
+                        mProceesLike=true;
+
+                        mDatabaseLike.addValueEventListener(new ValueEventListener()
+                        {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot)
+                            {
+                                if(mProceesLike)
+                                {
+                                    if(dataSnapshot.child(post_key).hasChild(firebaseAuth.getCurrentUser().getUid()))
+                                    {
+                                        mDatabaseLike.child(post_key).child(firebaseAuth.getCurrentUser().getUid()).removeValue();
+                                        mProceesLike=false;
+
+                                    }
+                                    else
+                                    {
+                                        mDatabaseUser.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                mDatabaseLike.child(post_key).child(firebaseAuth.getCurrentUser().getUid()).setValue(dataSnapshot.child("user_name").getValue());
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+                                        mProceesLike=false;
+                                    }
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+
                     }
                 });
 
@@ -200,14 +273,75 @@ public class WelcomeActivity extends AppCompatActivity
     {
         View mView;
         Button like_button;
+        TextView like_count_txt;
+
+        DatabaseReference mDatabaseLike;
+        FirebaseAuth mAuth;
 
         public PostViewHolder(View itemView)
         {
             super(itemView);
             mView=itemView;
 
-            like_button=(Button)mView.findViewById(R.id.like_button);
+            mAuth=FirebaseAuth.getInstance();
+            mDatabaseLike=FirebaseDatabase.getInstance().getReference().child("Likes");
+            mDatabaseLike.keepSynced(true);
 
+            like_button=(Button)mView.findViewById(R.id.like_button);
+            like_count_txt=(TextView)mView.findViewById(R.id.like_count_txt);
+
+        }
+
+        public void setLikeButton(final String post_key)
+        {
+            mDatabaseLike.addValueEventListener(new ValueEventListener()
+            {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot)
+                {
+
+                    if(dataSnapshot.child(post_key).hasChild(mAuth.getCurrentUser().getUid()))
+                    {
+                        like_button.setBackgroundResource(R.drawable.like);
+                    }
+                    else
+                    {
+
+                        like_button.setBackgroundResource(R.drawable.dislike);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError)
+                {
+
+                }
+            });
+
+            mDatabaseLike.child(post_key).addValueEventListener(new ValueEventListener()
+            {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot)
+                {
+                    long countChildren = dataSnapshot.getChildrenCount();
+                    Log.e("msg","count "+countChildren);
+                    if(countChildren==0)
+                    {
+                        like_count_txt.setText("");
+                    }
+                    else
+                    {
+                        like_count_txt.setText(""+countChildren);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError)
+                {
+
+                }
+            });
         }
 
         public void setTitle(String title)
