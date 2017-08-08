@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.indiaapps.myfirebaseapplication">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
@@ -29,7 +28,8 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".WelcomeActivity" />
         <activity android:name=".Post_Activity" />
-        <activity android:name=".Profile_Activity"></activity>
+        <activity android:name=".Profile_Activity" />
+        <activity android:name=".CommentActivity"></activity>
     </application>
 
 </manifest>

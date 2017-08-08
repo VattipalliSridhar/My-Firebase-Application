@@ -142,9 +142,11 @@ public class Post_Activity extends AppCompatActivity
                             databaseReference.child("desc").setValue(post_description);
                             databaseReference.child("image").setValue(dowmloadUri.toString());
                             databaseReference.child("uid").setValue(firebaseUser.getUid());
+                            databaseReference.child("posttime").setValue(System.currentTimeMillis());
                             databaseReference.child("userimage").setValue(dataSnapshot.child("user_pic_url").getValue());
                             databaseReference.child("username").setValue(dataSnapshot.child("user_name").getValue())
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    .addOnCompleteListener(new OnCompleteListener<Void>()
+                                    {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task)
                                 {

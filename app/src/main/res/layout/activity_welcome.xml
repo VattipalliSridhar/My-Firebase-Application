@@ -13,7 +13,10 @@
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         app:popupTheme="@style/AppTheme"
-        app:theme="@style/ToolBarTheme.ToolBarStyle"/>
+        app:theme="@style/ToolBarTheme.ToolBarStyle">
+
+
+    </android.support.v7.widget.Toolbar>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/post_list_recyclerView"

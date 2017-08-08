@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:layout_margin="5dp"
             android:id="@+id/post_rev_user_img"
             android:layout_width="wrap_content"
@@ -78,6 +78,27 @@
             android:layout_marginLeft="5dp"
             android:id="@+id/like_count_txt"
             android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:text="22"/>
+
+        <Button
+            android:layout_marginLeft="10dp"
+            android:id="@+id/comment_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/comment"/>
+
+        <TextView
+            android:layout_marginLeft="5dp"
+            android:id="@+id/comment_count_txt"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:text="22"/>
+
+        <TextView
+            android:gravity="center"
+            android:id="@+id/post_time_txt"
+            android:layout_width="match_parent"
             android:layout_height="30dp"
             android:text="22"/>
         </LinearLayout>

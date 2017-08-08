@@ -11,6 +11,9 @@ public class Post
     private String image;
     private String username;
     private String userimage;
+    private long posttime;
+
+
 
 
     public Post()
@@ -18,12 +21,13 @@ public class Post
 
     }
 
-    public Post(String title, String desc, String image, String username, String userimage) {
+    public Post(String title, String desc, String image, String username, String userimage, long posttime) {
         this.title = title;
         this.desc = desc;
         this.image = image;
         this.username = username;
         this.userimage = userimage;
+        this.posttime = posttime;
     }
 
 
@@ -66,5 +70,11 @@ public class Post
         this.userimage = userimage;
     }
 
+    public long getPosttime() {
+        return posttime;
+    }
 
+    public void setPosttime(long posttime) {
+        this.posttime = posttime;
+    }
 }

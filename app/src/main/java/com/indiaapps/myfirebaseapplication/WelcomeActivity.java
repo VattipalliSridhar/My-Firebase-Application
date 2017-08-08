@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
@@ -36,6 +37,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.security.AccessController.getContext;
+
 public class WelcomeActivity extends AppCompatActivity
 {
     public static int screenWidth,screenHeight;
@@ -57,6 +60,7 @@ public class WelcomeActivity extends AppCompatActivity
 
     //like code
     private DatabaseReference mDatabaseLike;
+    private DatabaseReference mDatabaseComment;
     private DatabaseReference mDatabaseUser;
     private boolean mProceesLike=false;
 
@@ -71,6 +75,7 @@ public class WelcomeActivity extends AppCompatActivity
         postList = new ArrayList<>();
         mDatabase= FirebaseDatabase.getInstance().getReference().child("Post");
         mDatabaseLike=FirebaseDatabase.getInstance().getReference().child("Likes");
+        mDatabaseComment=FirebaseDatabase.getInstance().getReference().child("comments");
 
         mDatabase.keepSynced(true);
         mDatabase.keepSynced(true);
@@ -181,7 +186,7 @@ public class WelcomeActivity extends AppCompatActivity
                 mDatabase)
         {
             @Override
-            protected void populateViewHolder(PostViewHolder viewHolder, Post model, int position)
+            protected void populateViewHolder(final PostViewHolder viewHolder, Post model, int position)
             {
                 final String post_key=getRef(position).getKey();
                 //model=new Post();
@@ -191,6 +196,8 @@ public class WelcomeActivity extends AppCompatActivity
                 viewHolder.setUserimage(getApplicationContext(),model.getUserimage());
                 viewHolder.setUsername(model.getUsername());
                 viewHolder.setLikeButton(post_key);
+                viewHolder.setCommenteButton(post_key);
+                viewHolder.setPosttime(model.getPosttime());
 
                 Log.e("Setting","Data img = "+ model.getImage());
                 Log.e("Setting","Data title = "+ model.getTitle());
@@ -233,7 +240,8 @@ public class WelcomeActivity extends AppCompatActivity
                                         mDatabaseUser.addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                                mDatabaseLike.child(post_key).child(firebaseAuth.getCurrentUser().getUid()).setValue(dataSnapshot.child("user_name").getValue());
+                                                mDatabaseLike.child(post_key).child(firebaseAuth.getCurrentUser().getUid())
+                                                        .setValue(dataSnapshot.child("user_name").getValue());
                                             }
 
                                             @Override
@@ -258,6 +266,19 @@ public class WelcomeActivity extends AppCompatActivity
                     }
                 });
 
+
+                viewHolder.comment_button.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                            Intent intent = new Intent(getApplicationContext(), CommentActivity.class);
+                            intent.putExtra("postid",post_key);
+                            startActivity(intent);
+                    }
+                });
+
+
             }
 
 
@@ -272,10 +293,10 @@ public class WelcomeActivity extends AppCompatActivity
     public static class PostViewHolder extends RecyclerView.ViewHolder
     {
         View mView;
-        Button like_button;
-        TextView like_count_txt;
+        Button like_button,comment_button;
+        TextView like_count_txt,comment_count_txt;
 
-        DatabaseReference mDatabaseLike;
+        DatabaseReference mDatabaseLike,mDatabaseComments;
         FirebaseAuth mAuth;
 
         public PostViewHolder(View itemView)
@@ -285,10 +306,15 @@ public class WelcomeActivity extends AppCompatActivity
 
             mAuth=FirebaseAuth.getInstance();
             mDatabaseLike=FirebaseDatabase.getInstance().getReference().child("Likes");
+            mDatabaseComments=FirebaseDatabase.getInstance().getReference().child("comments");
+            mDatabaseComments.keepSynced(true);
             mDatabaseLike.keepSynced(true);
 
             like_button=(Button)mView.findViewById(R.id.like_button);
             like_count_txt=(TextView)mView.findViewById(R.id.like_count_txt);
+
+            comment_button=(Button)mView.findViewById(R.id.comment_button);
+            comment_count_txt=(TextView)mView.findViewById(R.id.comment_count_txt);
 
         }
 
@@ -344,6 +370,31 @@ public class WelcomeActivity extends AppCompatActivity
             });
         }
 
+        public void setCommenteButton(final String post_key)
+        {
+            mDatabaseComments.child(post_key).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot)
+                {
+                    long countChildren = dataSnapshot.getChildrenCount();
+                    Log.e("msg","count "+countChildren);
+                    if(countChildren==0)
+                    {
+                        comment_count_txt.setText("");
+                    }
+                    else
+                    {
+                        comment_count_txt.setText(""+countChildren);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
         public void setTitle(String title)
         {
             TextView post_title=(TextView)mView.findViewById(R.id.post_rev_title);
@@ -359,6 +410,11 @@ public class WelcomeActivity extends AppCompatActivity
         {
             TextView post_user=(TextView)mView.findViewById(R.id.post_rev_user);
             post_user.setText(username);
+        }
+        public void setPosttime(long time)
+        {
+            TextView post_user=(TextView)mView.findViewById(R.id.post_time_txt);
+            post_user.setText(DateUtils.getRelativeTimeSpanString(time));
         }
         public void setImage(Context context , String image)
         {
@@ -377,20 +433,7 @@ public class WelcomeActivity extends AppCompatActivity
             Glide.with(context).load(userimage).into(imageView1);
         }
 
-        private Bitmap StringToBitmap(String userimage)
-        {
-            try
-            {
-                byte [] encodeByte= Base64.decode(userimage,Base64.DEFAULT);
-                Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-                return bitmap;
-            }
-            catch(Exception e)
-            {
-                e.getMessage();
-                return null;
-            }
-        }
+
     }
 
 
