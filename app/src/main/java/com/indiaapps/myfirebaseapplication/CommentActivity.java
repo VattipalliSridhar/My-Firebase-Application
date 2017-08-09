@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
@@ -171,44 +172,53 @@ public class CommentActivity extends AppCompatActivity implements View.OnClickLi
         progressDialog.setMessage("Sending comment..");
         progressDialog.setCancelable(true);
         progressDialog.setIndeterminate(true);
-        progressDialog.show();
+
 
         mComment = new Comment();
         final String uid = firebaseUser.getUid();
-        String strComment = mCommentEditTextView.getText().toString();
+        String strComment = mCommentEditTextView.getText().toString().trim();
 
         mComment.setCommentId(uid);
         mComment.setComment(strComment);
         mComment.setTimeCreated(System.currentTimeMillis());
         final DatabaseReference databaseReference=mDatabaseComments.push();
-        mDatabaseUser.addValueEventListener(new ValueEventListener()
+        if(!TextUtils.isEmpty(strComment))
         {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
+            progressDialog.show();
+            mDatabaseUser.addValueEventListener(new ValueEventListener()
             {
-                databaseReference.setValue(mComment);
-                databaseReference.child("userimage").setValue(dataSnapshot.child("user_pic_url").getValue());
-                databaseReference.child("username").setValue(dataSnapshot.child("user_name").getValue()).addOnCompleteListener(new OnCompleteListener<Void>()
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot)
                 {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task)
+                    databaseReference.setValue(mComment);
+                    databaseReference.child("userimage").setValue(dataSnapshot.child("user_pic_url").getValue());
+                    databaseReference.child("username").setValue(dataSnapshot.child("user_name").getValue()).addOnCompleteListener(new OnCompleteListener<Void>()
                     {
-                        if(task.isSuccessful())
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task)
                         {
-                            progressDialog.dismiss();
-                            mCommentEditTextView.getText().clear();
+                            if(task.isSuccessful())
+                            {
+                                progressDialog.dismiss();
+                                mCommentEditTextView.getText().clear();
+                            }
                         }
-                    }
-                });
+                    });
 
-            }
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError)
-            {
+                @Override
+                public void onCancelled(DatabaseError databaseError)
+                {
 
-            }
-        });
+                }
+            });
+        }
+        else
+        {
+            mCommentEditTextView.setError("Required user comments.");
+        }
+
 
     }
 
