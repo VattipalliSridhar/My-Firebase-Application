@@ -22,7 +22,12 @@
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
+        android:src="@mipmap/ic_launcher"
+        android:layout_centerInParent="true">
+
+
+
+        </de.hdodenhof.circleimageview.CircleImageView>
 
     <TextView
         android:layout_marginTop="10dp"
@@ -32,10 +37,8 @@
         android:textColor="@android:color/black"
         android:layout_margin="10dp"
         android:textSize="20sp"
-        android:background="@drawable/background_email"
         android:layout_below="@+id/profile_pic"/>
     <TextView
-        android:background="@drawable/background_email"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/user_name_txt"
         android:id="@+id/user_email_id_txt"
@@ -44,5 +47,14 @@
         android:textSize="20sp"
         android:textColor="@android:color/black"
         android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/profile_pic_change"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignRight="@+id/profile_pic"
+        android:layout_alignBottom="@+id/profile_pic"
+        android:background="@drawable/gallery_icon"
+         />
 
 </RelativeLayout>

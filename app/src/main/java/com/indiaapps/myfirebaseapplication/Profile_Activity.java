@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,6 +26,7 @@ public class Profile_Activity extends AppCompatActivity
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabaseUser;
+    private Button profile_pic_change;
 
     private TextView user_name_txt,user_email_id_txt;
 
@@ -79,6 +81,16 @@ public class Profile_Activity extends AppCompatActivity
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        profile_pic_change=(Button)findViewById(R.id.profile_pic_change);
+        profile_pic_change.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
             }
         });

@@ -1,7 +1,6 @@
 package com.indiaapps.myfirebaseapplication;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -144,9 +143,11 @@ public class CommentActivity extends AppCompatActivity implements View.OnClickLi
                 R.layout.row_comment,
                 CommentHolder.class,
                 mDatabaseComments
-        ) {
+        )
+        {
             @Override
-            protected void populateViewHolder(CommentHolder viewHolder, Comment model, int position) {
+            protected void populateViewHolder(CommentHolder viewHolder, Comment model, int position)
+            {
                 viewHolder.setUsername(model.getUsername());
                 viewHolder.setComment(model.getComment());
                 viewHolder.setTime(DateUtils.getRelativeTimeSpanString(model.getTimeCreated()));
