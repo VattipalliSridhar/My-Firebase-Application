@@ -20,13 +20,13 @@ import java.util.List;
 
 public class PostListAdapter extends ArrayAdapter<Post>
 {
-    private Activity context;
+    private Activity cntext;
     private int resource;
     private List<Post> postValuesList;
     public PostListAdapter(WelcomeActivity welcomeActivity, int post_row, List<Post> postList)
     {
         super(welcomeActivity, post_row, postList);
-        this.context = welcomeActivity;
+        this.cntext = welcomeActivity;
         this.resource = post_row;
         postValuesList = postList;
     }
@@ -34,7 +34,7 @@ public class PostListAdapter extends ArrayAdapter<Post>
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        LayoutInflater inflater = context.getLayoutInflater();
+        LayoutInflater inflater = cntext.getLayoutInflater();
         View v = inflater.inflate(resource, null);
         TextView post_title=(TextView)v.findViewById(R.id.post_rev_title);
         TextView post_desc=(TextView)v.findViewById(R.id.post_rev_desc);
@@ -45,7 +45,7 @@ public class PostListAdapter extends ArrayAdapter<Post>
 
         post_title.setText(postValuesList.get(position).getTitle());
         post_desc.setText(postValuesList.get(position).getDesc());
-        Glide.with(context).load(postValuesList.get(position).getImage()).into(imageView);
+        Glide.with(cntext).load(postValuesList.get(position).getImage()).into(imageView);
 
         return v;
     }
